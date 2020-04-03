@@ -5,26 +5,22 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 public class Contact_Adapter extends RecyclerView.Adapter<Contact_Adapter.ViewHolder> {
-
     private Context context;
-    private ArrayList<Contact_Model> arrayList;
-    public Contact_Adapter(Context context, ArrayList<Contact_Model> arrayListt) {
+    private ArrayList<Contact_Model> contact_models;
+
+    public Contact_Adapter(Context context, ArrayList<Contact_Model> contact_models) {
         this.context = context;
-        this.arrayList = arrayList;
+        this.contact_models = contact_models;
     }
-
-
 
     @NonNull
     @Override
@@ -35,28 +31,38 @@ public class Contact_Adapter extends RecyclerView.Adapter<Contact_Adapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Contact_Model contact_model=arrayList.get(position);
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+        Contact_Model contact_model = contact_models.get(position);
         if (!TextUtils.isEmpty(contact_model.getContactName())) {
-            holder.contactName.setText("CONTACT NUMBER - \n" + contact_model.getContactName());
+            holder.contactName.setText(contact_model.getContactName());
         }
         if (!TextUtils.isEmpty(contact_model.getContactNumber())) {
-            holder.contactNumber.setText("CONTACT NUMBER - \n" + contact_model.getContactNumber());
+            holder.contactNumber.setText(contact_model.getContactNumber());
         }
+        holder.remove_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                contact_models.remove(position);
+                notifyItemRemoved(position);
+                notifyDataSetChanged();
+            }
+        });
 
     }
 
     @Override
     public int getItemCount() {
-        return arrayList.size();
+        return contact_models.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
-        TextView contactName, contactNumber;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView contactName, contactNumber, remove_text;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             contactName = itemView.findViewById(R.id.contactName);
             contactNumber = itemView.findViewById(R.id.contactNumber);
+            remove_text = itemView.findViewById(R.id.remove_text);
         }
     }
 }

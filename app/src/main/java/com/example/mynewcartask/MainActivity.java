@@ -3,56 +3,44 @@ package com.example.mynewcartask;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     Button btnview;
-    TextView txtname,txtphno;
     static final int PICK_CONTACT = 1;
-    String st;
     final private int REQUEST_MULTIPLE_PERMISSIONS = 124;
 
     private static RecyclerView contact_listview;
-    ArrayList<Contact_Model> selectUsers=new ArrayList<>();
-    public   Contact_Adapter adapter;
+    ArrayList<Contact_Model> selectUsers = new ArrayList<>();
+    public Contact_Adapter contact_adapter;
     private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             AccessContact();
         }
         btnview = (Button) findViewById(R.id.btnload);
-        txtname=(TextView) findViewById(R.id.txtname);
-        txtphno=(TextView) findViewById(R.id.txtphno);
         btnview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,13 +49,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         contact_listview = (RecyclerView) findViewById(R.id.contact_listview);
-        contact_listview.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(getApplicationContext());
         contact_listview.setLayoutManager(layoutManager);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private void AccessContact()
-    {
+    private void AccessContact() {
         List<String> permissionsNeeded = new ArrayList<String>();
         final List<String> permissionsList = new ArrayList<String>();
         if (!addPermission(permissionsList, Manifest.permission.READ_CONTACTS))
@@ -106,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
         new AlertDialog.Builder(MainActivity.this)
                 .setMessage(message)
@@ -133,21 +121,15 @@ public class MainActivity extends AppCompatActivity {
                                         null, null);
                                 phones.moveToFirst();
                                 String cNumber = phones.getString(phones.getColumnIndex("data1"));
-                                System.out.println("number is:" + cNumber);
-                               // txtphno.setText("Phone Number is: "+cNumber);
                                 String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                             //   txtname.setText("Name is: "+name);
-
                                 Contact_Model contact = new Contact_Model();
                                 contact.setContactName(name);
                                 contact.setContactNumber(cNumber);
                                 selectUsers.add(contact);
-                                adapter = null;
-                                if (adapter == null) {
-                                    adapter = new Contact_Adapter(getApplicationContext(), selectUsers);
-                                    contact_listview.setAdapter(adapter);// set adapter
-                                }
-                                adapter.notifyDataSetChanged();
+                                contact_adapter = new Contact_Adapter(getApplicationContext(), selectUsers);
+                                contact_listview.setAdapter(contact_adapter);// set adapter
+                                contact_adapter.notifyDataSetChanged();
+
                             } else {
 
                                 // If adapter is null then show toast
@@ -156,12 +138,7 @@ public class MainActivity extends AppCompatActivity {
                             }
 
 
-
-
-
-                        }
-                        catch (Exception ex)
-                        {
+                        } catch (Exception ex) {
 
                         }
                     }
@@ -169,8 +146,5 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
-
-
-
 
 }
