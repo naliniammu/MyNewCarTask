@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">MyNewCarTask</string>
+    <string name="app_name">Contact Details</string>
+    <string name="read_contacts">Read Contacts</string>
+    <string name="write_contacts">Write Contacts</string>
+    <string name="grant_access">You need to grant access to</string>
+    <string name="no_contacts">There are no contacts.</string>
+    <string name="view_contacts_text">View contacts</string>
+    <string name="remove">Remove</string>
 </resources>
